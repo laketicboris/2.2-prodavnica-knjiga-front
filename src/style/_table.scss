@@ -1,0 +1,110 @@
+.table-container {
+  padding: $spacing-lg;
+  overflow-x: auto; // bez pucanja rasporeda na užim ekranima
+
+  .page-title {
+    color: $text-dark;
+    font-size: 32px;
+    margin-bottom: $spacing-lg;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
+  .loading {
+    @include flex-center;
+    padding: $spacing-xxl;
+    font-size: 18px;
+    color: $text-light;
+  }
+
+  .error {
+    color: #e74c3c;
+    padding: $spacing-lg;
+    background: #fdf2f2;
+    border: 1px solid #fecaca;
+    border-radius: $radius-sm;
+    margin-bottom: $spacing-lg;
+  }
+
+  .no-data {
+    text-align: center;
+    padding: $spacing-xxl;
+    color: $text-light;
+    font-size: 18px;
+  }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    table-layout: auto;
+
+    thead {
+      background: linear-gradient(135deg, #667eea 0%, #41a3e4 100%);
+
+      th {
+        padding: $spacing-md $spacing-lg;
+        text-align: left;
+        font-weight: 600;
+        color: $text-white;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+      }
+
+      th.id-column        { width: 64px;  text-align: center; }
+      th.title-column     { width: 28%; }
+      th.isbn-column      { width: 16%; }
+      th.date-column      { width: 140px; text-align: center; }
+      th.pages-column     { width: 80px;  text-align: center; }
+      th.author-column    { width: 16%; }
+      th.publisher-column { width: 14%; }
+      th.actions-column   { width: 120px; text-align: center; white-space: nowrap; }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid $border-color;
+        transition: all $transition-fast;
+
+        &:hover { background-color: #f8fafc; transform: scale(1.001); }
+        &:last-child { border-bottom: none; }
+      }
+
+      td {
+        padding: $spacing-md $spacing-lg;
+        color: $text-dark;
+        vertical-align: middle;
+        white-space: normal;
+        word-break: break-word;
+        overflow: visible;
+
+        &.id-column      { font-weight: 600; color: $primary-color; text-align: center; white-space: nowrap; }
+        &.title-column   { font-weight: 500; }
+        &.date-column    { font-family: 'Courier New', monospace; font-size: 14px; text-align: center; }
+        &.pages-column   { text-align: center; }
+        &.actions-column { white-space: nowrap; text-align: center; }
+      }
+
+      .btn-edit,
+      .btn-delete {
+        padding: 6px 12px;
+        margin: 0 4px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        display: inline-block;
+      }
+
+      .btn-edit   { background: #3498db; color: #fff; }
+      .btn-delete { background: #e74c3c; color: #fff; }
+    }
+  }
+}

@@ -1,0 +1,99 @@
+.form-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: $spacing-xl;
+
+  .form-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: $text-dark;
+    margin-bottom: $spacing-lg;
+    text-align: center;
+  }
+
+  .form-card {
+    background: white;
+    padding: $spacing-xl;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .form-group {
+    margin-bottom: $spacing-lg;
+
+    .form-label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: $spacing-sm;
+      color: $text-dark;
+    }
+
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: $spacing-md;
+      border: 1px solid $border-color;
+      border-radius: 8px;
+      font-size: 16px;
+      color: $text-dark;
+
+      &:focus {
+        outline: none;
+        border-color: $primary-color;
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.2);
+      }
+    }
+  }
+
+  .form-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-md;
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+
+      &:hover {
+        background: #5a67d8;
+      }
+    }
+
+    .btn-secondary {
+      background: #ccc;
+      color: #333;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+
+      &:hover {
+        background: #bbb;
+      }
+    }
+  }
+
+  .message {
+    margin-bottom: $spacing-lg;
+    padding: $spacing-md;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+
+    &.success {
+      background: #e6fffa;
+      color: #0d9488;
+      border: 1px solid #0d9488;
+    }
+
+    &.error {
+      background: #fdf2f2;
+      color: #e74c3c;
+      border: 1px solid #fecaca;
+    }
+  }
+}

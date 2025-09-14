@@ -1,0 +1,43 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  @include gradient-bg($primary-color, $secondary-color);
+  padding: $spacing-md $spacing-lg;
+  box-shadow: 0 2px 10px $shadow-light;
+  margin-bottom: $spacing-lg;
+
+  .nav {
+    display: flex;
+    gap: $spacing-lg;
+    align-items: center;
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: $text-white;
+      margin-right: $spacing-xl;
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+    }
+
+    .nav-link {
+      @include button-style;
+      color: rgba($text-white, 0.9);
+      border: 1px solid transparent;
+
+      &:hover {
+        background: rgba($text-white, 0.1);
+        color: $text-white;
+        transform: translateY(-1px);
+      }
+
+      &.active {
+        background: rgba($text-white, 0.2);
+        color: $text-white;
+        border-color: rgba($text-white, 0.3);
+      }
+    }
+  }
+}

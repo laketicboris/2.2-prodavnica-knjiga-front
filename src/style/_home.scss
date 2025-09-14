@@ -1,0 +1,68 @@
+.home {
+  padding: $spacing-xxl $spacing-lg;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+
+  .hero {
+    @include gradient-bg($accent-color, $accent-secondary);
+    padding: 60px $spacing-xxl;
+    border-radius: $radius-lg;
+    color: $text-white;
+    margin-bottom: $spacing-xxl;
+    box-shadow: 0 8px 32px $shadow-light;
+
+    .title {
+      font-size: 48px;
+      font-weight: bold;
+      margin-bottom: $spacing-md;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+      @media (max-width: $tablet) {
+        font-size: 32px;
+      }
+    }
+
+    .subtitle {
+      font-size: 20px;
+      opacity: 0.9;
+      line-height: 1.6;
+
+      @media (max-width: $tablet) {
+        font-size: 16px;
+      }
+    }
+  }
+
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: $spacing-lg;
+    margin-top: $spacing-xxl;
+
+    .feature-card {
+      background: $text-white;
+      padding: $spacing-xl;
+      border-radius: $radius-md;
+      border: 1px solid $border-color;
+      @include card-shadow;
+
+      .feature-icon {
+        font-size: 48px;
+        margin-bottom: $spacing-md;
+      }
+
+      .feature-title {
+        color: $text-dark;
+        margin-bottom: $spacing-sm;
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      .feature-description {
+        color: $text-light;
+        line-height: 1.6;
+      }
+    }
+  }
+}

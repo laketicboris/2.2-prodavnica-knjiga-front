@@ -1,0 +1,30 @@
+@mixin gradient-bg($color1, $color2) {
+  background: linear-gradient(135deg, $color1 0%, $color2 100%);
+}
+
+@mixin card-shadow {
+  box-shadow: 0 4px 20px $shadow-light;
+  transition: all $transition-normal;
+  
+  &:hover {
+    box-shadow: 0 8px 25px $shadow-medium;
+    transform: translateY(-2px);
+  }
+}
+
+@mixin button-style {
+  padding: $spacing-sm $spacing-lg;
+  border-radius: $radius-sm;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all $transition-normal;
+  text-decoration: none;
+  display: inline-block;
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

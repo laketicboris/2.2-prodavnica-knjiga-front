@@ -1,0 +1,33 @@
+$primary-color: #667eea;
+$secondary-color: #41a3e4;
+$accent-color: #667eea;
+$accent-secondary: #41a3e4;
+$text-dark: #333;
+$text-light: #666;
+$text-white: #fff;
+$border-color: #f0f0f0;
+$shadow-light: rgba(0, 0, 0, 0.08);
+$shadow-medium: rgba(0, 0, 0, 0.15);
+$shadow-dark: rgba(0, 0, 0, 0.25);
+
+// Breakpoints
+$mobile: 576px;
+$tablet: 768px;
+$desktop: 1024px;
+
+// Spacing
+$spacing-xs: 8px;
+$spacing-sm: 12px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-xxl: 40px;
+
+// Border radius
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+
+// Transition
+$transition-fast: 0.2s ease;
+$transition-normal: 0.3s ease;

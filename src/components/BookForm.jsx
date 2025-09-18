@@ -34,38 +34,42 @@ const BookForm = () => {
   const [showNewAuthor, setShowNewAuthor] = useState(false);
   const [showNewPublisher, setShowNewPublisher] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const [pubs, auths] = await Promise.all([getAllPublishers(), getAllAuthors()]);
-        const pubsArr = Array.isArray(pubs) ? pubs : [];
-        const authsArr = Array.isArray(auths) ? auths : [];
-        setPublishers(pubsArr);
-        setAuthors(authsArr);
-      } catch (e) {
-        setMessage("Failed to load data.");
-      }
-    })();
-  }, []);
+  const loadInitialData = async () => {
+    try {
+      const [pubs, auths] = await Promise.all([getAllPublishers(), getAllAuthors()]);
+      const pubsArr = Array.isArray(pubs) ? pubs : [];
+      const authsArr = Array.isArray(auths) ? auths : [];
+      setPublishers(pubsArr);
+      setAuthors(authsArr);
+    } catch (e) {
+      setMessage("Failed to load data.");
+    }
+  };
 
   useEffect(() => {
+    loadInitialData();
+  }, []);
+
+  const loadBookData = async () => {
     if (!id) return;
-    (async () => {
-      try {
-        const book = await getBookById(id);
-        setFormData(prev => ({
-          ...prev,
-          title: book.title || "",
-          isbn: book.isbn || "",
-          publicationDate: book.publishedDate ? book.publishedDate.split("T")[0] : "",
-          pages: book.pageCount?.toString() || "",
-          authorId: book.authorId?.toString() || "",
-          publisherId: book.publisherId?.toString() || "",
-        }));
-      } catch (e) {
-        setMessage("Failed to load book.");
-      }
-    })();
+    try {
+      const book = await getBookById(id);
+      setFormData(prev => ({
+        ...prev,
+        title: book.title || "",
+        isbn: book.isbn || "",
+        publicationDate: book.publishedDate ? book.publishedDate.split("T")[0] : "",
+        pages: book.pageCount?.toString() || "",
+        authorId: book.authorId?.toString() || "",
+        publisherId: book.publisherId?.toString() || "",
+      }));
+    } catch (e) {
+      setMessage("Failed to load book.");
+    }
+  };
+
+  useEffect(() => {
+    loadBookData();
   }, [id]);
 
   const handleChange = (e) => {
@@ -88,17 +92,17 @@ const BookForm = () => {
     const value = e.target.value;
     if (value === "new") {
       setShowNewPublisher(true);
-      setFormData(prev => ({ 
-        ...prev, 
-        publisherId: "", 
+      setFormData(prev => ({
+        ...prev,
+        publisherId: "",
         newPublisherName: "",
         newPublisherAddress: "",
         newPublisherWebsite: ""
       }));
     } else {
       setShowNewPublisher(false);
-      setFormData(prev => ({ 
-        ...prev, 
+      setFormData(prev => ({
+        ...prev,
         publisherId: value,
         newPublisherName: "",
         newPublisherAddress: "",
@@ -109,7 +113,7 @@ const BookForm = () => {
 
   const createNewAuthor = async () => {
     if (!formData.newAuthorName.trim()) return null;
-    
+
     try {
       const newAuthor = await createAuthor({
         id: 0,
@@ -117,7 +121,7 @@ const BookForm = () => {
         biography: "",
         dateOfBirth: "2025-01-01T00:00:00Z"
       });
-      
+
       setAuthors(prev => [...prev, newAuthor]);
       return newAuthor.id;
     } catch (e) {
@@ -127,7 +131,7 @@ const BookForm = () => {
 
   const createNewPublisher = async () => {
     if (!formData.newPublisherName.trim()) return null;
-    
+
     try {
       const newPublisher = await createPublisher({
         id: 0,
@@ -135,12 +139,23 @@ const BookForm = () => {
         address: formData.newPublisherAddress.trim() || "",
         website: formData.newPublisherWebsite.trim() || ""
       });
-      
+
       setPublishers(prev => [...prev, newPublisher]);
       return newPublisher.id;
     } catch (e) {
       throw new Error("Failed to create publisher");
     }
+  };
+
+  const getMessageClass = (message) => {
+    if (
+      message.toLowerCase().includes("error") ||
+      message.toLowerCase().includes("failed") ||
+      message.toLowerCase().includes("required")
+    ) {
+      return "message error";
+    }
+    return "message success";
   };
 
   const handleSubmit = async (e) => {
@@ -151,6 +166,7 @@ const BookForm = () => {
     if (!formData.title.trim()) {
       setMessage("Title is required!");
       setLoading(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
@@ -162,6 +178,7 @@ const BookForm = () => {
         if (!formData.newAuthorName.trim()) {
           setMessage("Author name is required!");
           setLoading(false);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
           return;
         }
         authorId = await createNewAuthor();
@@ -171,6 +188,7 @@ const BookForm = () => {
         if (!formData.newPublisherName.trim()) {
           setMessage("Publisher name is required!");
           setLoading(false);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
           return;
         }
         publisherId = await createNewPublisher();
@@ -179,19 +197,18 @@ const BookForm = () => {
       if (!authorId || !publisherId) {
         setMessage("Author and Publisher are required!");
         setLoading(false);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
       }
 
       const payload = {
         id: id ? parseInt(id, 10) : 0,
         title: formData.title.trim(),
-        isbn: formData.isbn.trim() || null,
-        publishedDate: formData.publicationDate || null,
-        pageCount: formData.pages ? parseInt(formData.pages, 10) : null,
+        isbn: formData.isbn.trim() || "",
+        publishedDate: formData.publicationDate ? `${formData.publicationDate}T00:00:00Z` : "2025-01-01T00:00:00Z",
+        pageCount: formData.pages ? parseInt(formData.pages, 10) : 0,
         authorId: parseInt(authorId, 10),
         publisherId: parseInt(publisherId, 10),
-        author: null,
-        publisher: null
       };
 
       if (id) {
@@ -199,10 +216,11 @@ const BookForm = () => {
       } else {
         await createBook(payload);
       }
-      
+
       navigate("/books");
     } catch (e) {
       setMessage(`Error ${id ? 'updating' : 'creating'} book. ${e.message || 'Please try again.'}`);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setLoading(false);
     }
@@ -216,7 +234,7 @@ const BookForm = () => {
     <div className="form-container">
       <h1 className="form-title">{id ? "✏️ Edit Book" : "➕ Create Book"}</h1>
       {message && (
-        <div className={`message ${message.includes('Error') ? 'error' : 'success'}`}>
+        <div className={getMessageClass(message)}>
           {message}
         </div>
       )}
@@ -225,54 +243,54 @@ const BookForm = () => {
         <form onSubmit={handleSubmit} noValidate>
           <div className="form-group">
             <label className="form-label">Title *</label>
-            <input 
-              className="form-input" 
-              type="text" 
-              name="title" 
+            <input
+              className="form-input"
+              type="text"
+              name="title"
               required
-              value={formData.title} 
+              value={formData.title}
               onChange={handleChange}
             />
           </div>
 
           <div className="form-group">
             <label className="form-label">ISBN</label>
-            <input 
-              className="form-input" 
-              type="text" 
+            <input
+              className="form-input"
+              type="text"
               name="isbn"
-              value={formData.isbn} 
+              value={formData.isbn}
               onChange={handleChange}
             />
           </div>
 
           <div className="form-group">
             <label className="form-label">Publication Date</label>
-            <input 
-              className="form-input" 
-              type="date" 
+            <input
+              className="form-input"
+              type="date"
               name="publicationDate"
-              value={formData.publicationDate} 
+              value={formData.publicationDate}
               onChange={handleChange}
             />
           </div>
 
           <div className="form-group">
             <label className="form-label">Pages</label>
-            <input 
-              className="form-input" 
-              type="number" 
-              name="pages" 
+            <input
+              className="form-input"
+              type="number"
+              name="pages"
               min="0"
-              value={formData.pages} 
+              value={formData.pages}
               onChange={handleChange}
             />
           </div>
 
           <div className="form-group">
             <label className="form-label">Author *</label>
-            <select 
-              className="form-select" 
+            <select
+              className="form-select"
               value={showNewAuthor ? "new" : formData.authorId}
               onChange={handleAuthorChange}
             >
@@ -287,12 +305,12 @@ const BookForm = () => {
           {showNewAuthor && (
             <div className="form-group">
               <label className="form-label">New Author Name *</label>
-              <input 
-                className="form-input" 
-                type="text" 
+              <input
+                className="form-input"
+                type="text"
                 name="newAuthorName"
                 placeholder="Enter author's full name"
-                value={formData.newAuthorName} 
+                value={formData.newAuthorName}
                 onChange={handleChange}
               />
             </div>
@@ -300,8 +318,8 @@ const BookForm = () => {
 
           <div className="form-group">
             <label className="form-label">Publisher *</label>
-            <select 
-              className="form-select" 
+            <select
+              className="form-select"
               value={showNewPublisher ? "new" : formData.publisherId}
               onChange={handlePublisherChange}
             >
@@ -317,34 +335,34 @@ const BookForm = () => {
             <>
               <div className="form-group">
                 <label className="form-label">New Publisher Name *</label>
-                <input 
-                  className="form-input" 
-                  type="text" 
+                <input
+                  className="form-input"
+                  type="text"
                   name="newPublisherName"
                   placeholder="Enter publisher name"
-                  value={formData.newPublisherName} 
+                  value={formData.newPublisherName}
                   onChange={handleChange}
                 />
               </div>
               <div className="form-group">
                 <label className="form-label">Publisher Address</label>
-                <input 
-                  className="form-input" 
-                  type="text" 
+                <input
+                  className="form-input"
+                  type="text"
                   name="newPublisherAddress"
                   placeholder="Enter publisher address"
-                  value={formData.newPublisherAddress} 
+                  value={formData.newPublisherAddress}
                   onChange={handleChange}
                 />
               </div>
               <div className="form-group">
                 <label className="form-label">Publisher Website</label>
-                <input 
-                  className="form-input" 
-                  type="url" 
+                <input
+                  className="form-input"
+                  type="url"
                   name="newPublisherWebsite"
                   placeholder="https://example.com"
-                  value={formData.newPublisherWebsite} 
+                  value={formData.newPublisherWebsite}
                   onChange={handleChange}
                 />
               </div>
@@ -352,17 +370,17 @@ const BookForm = () => {
           )}
 
           <div className="form-buttons">
-            <button 
-              type="button" 
-              className="btn-secondary" 
+            <button
+              type="button"
+              className="btn-secondary"
               onClick={handleCancel}
               disabled={loading}
             >
               Cancel
             </button>
-            <button 
-              className="btn-primary" 
-              type="submit" 
+            <button
+              className="btn-primary"
+              type="submit"
               disabled={loading}
             >
               {loading ? "Saving..." : (id ? "Update Book" : "Create Book")}

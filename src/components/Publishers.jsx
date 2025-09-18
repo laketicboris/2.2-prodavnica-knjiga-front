@@ -6,20 +6,22 @@ const Publishers = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const fetchPublishers = async () => {
+    try {
+      setLoading(true);
+      const data = await getAllPublishers();
+      console.log("Publishers response:", data);
+      setPublishers(Array.isArray(data) ? data : []);
+    } catch (e) {
+      console.error("Publishers fetch error:", e?.response?.status, e?.response?.data, e);
+      setError("Failed to fetch publishers.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        const data = await getAllPublishers();
-        console.log("Publishers response:", data);
-        setPublishers(Array.isArray(data) ? data : []);
-      } catch (e) {
-        console.error("Publishers fetch error:", e?.response?.status, e?.response?.data, e);
-        setError("Failed to fetch publishers.");
-      } finally {
-        setLoading(false);
-      }
-    })();
+    fetchPublishers();
   }, []);
 
   if (loading) return (
@@ -43,7 +45,6 @@ const Publishers = () => {
         <table className="data-table">
           <thead>
             <tr>
-              <th className="id-column">ID</th>
               <th className="title-column">Name</th>
               <th>Address</th>
               <th>Website</th>
@@ -52,7 +53,6 @@ const Publishers = () => {
           <tbody>
             {publishers.map(p => (
               <tr key={p.id}>
-                <td className="id-column">{p.id}</td>
                 <td className="title-column">{p.name}</td>
                 <td>{p.address}</td>
                 <td>{p.website}</td>

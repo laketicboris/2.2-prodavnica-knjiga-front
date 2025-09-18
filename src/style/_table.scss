@@ -1,6 +1,6 @@
 .table-container {
   padding: $spacing-lg;
-  overflow-x: auto; // bez pucanja rasporeda na užim ekranima
+  overflow-x: auto;
 
   .page-title {
     color: $text-dark;
@@ -58,14 +58,37 @@
         white-space: nowrap;
       }
 
-      th.id-column        { width: 64px;  text-align: center; }
-      th.title-column     { width: 28%; }
-      th.isbn-column      { width: 16%; }
-      th.date-column      { width: 140px; text-align: center; }
-      th.pages-column     { width: 80px;  text-align: center; }
-      th.author-column    { width: 16%; }
-      th.publisher-column { width: 14%; }
-      th.actions-column   { width: 120px; text-align: center; white-space: nowrap; }
+      th.title-column {
+        width: 28%;
+      }
+
+      th.isbn-column {
+        width: 16%;
+      }
+
+      th.date-column {
+        width: 140px;
+        text-align: center;
+      }
+
+      th.pages-column {
+        width: 80px;
+        text-align: center;
+      }
+
+      th.author-column {
+        width: 16%;
+      }
+
+      th.publisher-column {
+        width: 14%;
+      }
+
+      th.actions-column {
+        width: 120px;
+        text-align: center;
+        white-space: nowrap;
+      }
     }
 
     tbody {
@@ -73,8 +96,14 @@
         border-bottom: 1px solid $border-color;
         transition: all $transition-fast;
 
-        &:hover { background-color: #f8fafc; transform: scale(1.001); }
-        &:last-child { border-bottom: none; }
+        &:hover {
+          background-color: #f8fafc;
+          transform: scale(1.001);
+        }
+
+        &:last-child {
+          border-bottom: none;
+        }
       }
 
       td {
@@ -85,11 +114,31 @@
         word-break: break-word;
         overflow: visible;
 
-        &.id-column      { font-weight: 600; color: $primary-color; text-align: center; white-space: nowrap; }
-        &.title-column   { font-weight: 500; }
-        &.date-column    { font-family: 'Courier New', monospace; font-size: 14px; text-align: center; }
-        &.pages-column   { text-align: center; }
-        &.actions-column { white-space: nowrap; text-align: center; }
+        &.id-column {
+          font-weight: 600;
+          color: $primary-color;
+          text-align: center;
+          white-space: nowrap;
+        }
+
+        &.title-column {
+          font-weight: 500;
+        }
+
+        &.date-column {
+          font-family: 'Courier New', monospace;
+          font-size: 14px;
+          text-align: center;
+        }
+
+        &.pages-column {
+          text-align: center;
+        }
+
+        &.actions-column {
+          white-space: nowrap;
+          text-align: center;
+        }
       }
 
       .btn-edit,
@@ -103,8 +152,26 @@
         display: inline-block;
       }
 
-      .btn-edit   { background: #3498db; color: #fff; }
-      .btn-delete { background: #e74c3c; color: #fff; }
+      .btn-edit {
+        background: #3498db;
+        color: #fff;
+      }
+
+      .btn-delete {
+        background: #e74c3c;
+        color: #fff;
+      }
     }
   }
+}
+
+.table-container .data-table thead th.number-column,
+.table-container .data-table tbody td.number-column {
+  width: 1%;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+  padding-left: 6px;
+  padding-right: 6px;
+  text-align: center;
 }

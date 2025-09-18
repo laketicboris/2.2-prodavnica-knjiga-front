@@ -56,20 +56,9 @@ const Books = () => {
         <div className="no-data">No books available.</div>
       ) : (
         <table className="data-table">
-          <colgroup>
-            <col style={{ width: "64px" }} />
-            <col style={{ width: "28%" }} />
-            <col style={{ width: "16%" }} />
-            <col style={{ width: "140px" }} />
-            <col style={{ width: "80px" }} />
-            <col style={{ width: "16%" }} />
-            <col style={{ width: "14%" }} />
-            <col style={{ width: "120px" }} />
-          </colgroup>
-
           <thead>
             <tr>
-              <th className="id-column">ID</th>
+              <th className="number-column">#</th>
               <th className="title-column">Title</th>
               <th className="isbn-column">ISBN</th>
               <th className="date-column">Publication Date</th>
@@ -81,9 +70,9 @@ const Books = () => {
           </thead>
 
           <tbody>
-            {books.map((book) => (
+            {books.map((book, index) => (
               <tr key={book.id}>
-                <td className="id-column">{book.id}</td>
+                <td className="number-column">{index + 1}</td>
                 <td className="title-column">{book.title}</td>
                 <td className="isbn-column">{book.isbn}</td>
                 <td className="date-column">
@@ -103,13 +92,13 @@ const Books = () => {
                     className="btn-edit"
                     onClick={() => navigate(`/edit-book/${book.id}`)}
                   >
-                    Edit
+                    ✏️ Edit
                   </button>
                   <button
                     className="btn-delete"
                     onClick={() => handleDelete(book.id)}
                   >
-                    Delete
+                    🗑️ Delete
                   </button>
                 </td>
               </tr>

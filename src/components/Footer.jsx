@@ -11,7 +11,7 @@ const Footer = () => {
             <p>Your digital library management solution</p>
           </div>
 
-          <div className="footer-links">
+          <div className="footer-nav">
             <h4>Quick Links</h4>
             <ul>
               <li><Link to="/">Home</Link></li>

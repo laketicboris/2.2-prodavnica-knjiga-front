@@ -48,8 +48,8 @@ export async function deleteBook(id) {
 
 // Authors
 const AUTHORS_RESOURCE = "api/Authors";
-export async function getAllAuthors() {
-  const { data } = await AxiosConfig.get(AUTHORS_RESOURCE);
+export async function getAllAuthors(pageNumber = 1, pageSize = 5) {
+  const { data } = await AxiosConfig.get(`${AUTHORS_RESOURCE}?pageNumber=${pageNumber}&pageSize=${pageSize}`);
   return data;
 }
 export async function getAuthorById(id) {

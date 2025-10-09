@@ -5,6 +5,7 @@ import Home from "./components/Home.jsx";
 import Publishers from "./components/Publishers.jsx";
 import Books from "./components/Books.jsx";
 import BookForm from "./components/BookForm.jsx";
+import Authors from "./components/Authors.jsx";
 import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
 import './style/main.scss';
@@ -17,6 +18,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/publishers" element={<Publishers />} />
         <Route path="/books" element={<Books />} />
+        <Route path="/authors" element={<Authors />} />
         <Route path="/create-book" element={<BookForm />} />
         <Route path="/edit-book/:id" element={<BookForm />} /> {/* EDIT */}
       </Routes>

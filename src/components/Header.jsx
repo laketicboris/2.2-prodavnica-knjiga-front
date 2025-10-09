@@ -12,6 +12,7 @@ const Header = () => {
           📚 Bookstore
         </div>
         <NavLink to="/" className={linkClass}>🏠 Home</NavLink>
+        <NavLink to="/authors" className={linkClass}>✍️ Authors</NavLink>
         <NavLink to="/publishers" className={linkClass}>🏢 Publishers</NavLink>
         <NavLink to="/books" className={linkClass}>📖 Books</NavLink>
         <NavLink to="/create-book" className={linkClass}>➕ Create Book</NavLink>

@@ -2,22 +2,31 @@ import AxiosConfig from "../config/axios.config";
 
 // Publishers
 const PUBLISHERS_RESOURCE = "api/Publishers";
-export async function getAllPublishers() {
-  const { data } = await AxiosConfig.get(PUBLISHERS_RESOURCE);
+export async function getAllPublishers(sortType = 0) {
+  const { data } = await AxiosConfig.get(`${PUBLISHERS_RESOURCE}?sortType=${sortType}`);
   return data;
 }
+
+export async function getPublisherSortTypes() {
+  const { data } = await AxiosConfig.get(`${PUBLISHERS_RESOURCE}/sortTypes`);
+  return data;
+}
+
 export async function getPublisherById(id) {
   const { data } = await AxiosConfig.get(`${PUBLISHERS_RESOURCE}/${id}`);
   return data;
 }
+
 export async function createPublisher(publisherData) {
   const { data } = await AxiosConfig.post(PUBLISHERS_RESOURCE, publisherData);
   return data;
 }
+
 export async function updatePublisher(id, publisherData) {
   const { data } = await AxiosConfig.put(`${PUBLISHERS_RESOURCE}/${id}`, publisherData);
   return data;
 }
+
 export async function deletePublisher(id) {
   const { data } = await AxiosConfig.delete(`${PUBLISHERS_RESOURCE}/${id}`);
   return data;

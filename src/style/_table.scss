@@ -2,6 +2,7 @@
   padding: $spacing-lg;
   overflow-x: auto;
 
+  // ========== HEADER ==========
   .table-header {
     display: flex;
     justify-content: space-between;
@@ -21,6 +22,13 @@
     gap: $spacing-sm;
   }
 
+  .header-controls {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+  }
+
+  // ========== SORT DROPDOWN ==========
   .sort-container {
     display: flex;
     align-items: center;
@@ -55,6 +63,92 @@
     }
   }
 
+  // ========== FILTER TOGGLE BUTTON ==========
+  .btn-filter-toggle {
+    @include button-style;
+    background: $secondary-color;
+    color: $text-white;
+    font-size: 14px;
+    white-space: nowrap;
+
+    &:hover {
+      background: darken($secondary-color, 10%);
+    }
+  }
+
+  // ========== FILTER PANEL ==========
+  .filter-panel {
+    background: white;
+    padding: $spacing-xl;
+    border-radius: $radius-md;
+    margin-bottom: $spacing-lg;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: $spacing-md;
+      margin-bottom: $spacing-lg;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-xs;
+
+      label {
+        font-weight: 500;
+        font-size: 14px;
+        color: $text-dark;
+      }
+
+      input, select {
+        padding: $spacing-sm $spacing-md;
+        border: 1px solid $border-color;
+        border-radius: $radius-sm;
+        font-size: 14px;
+        color: $text-dark;
+
+        &:focus {
+          outline: none;
+          border-color: $primary-color;
+          box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+        }
+      }
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: $spacing-md;
+      justify-content: flex-end;
+
+      .btn-apply,
+      .btn-reset {
+        @include button-style;
+        font-size: 14px;
+      }
+
+      .btn-apply {
+        background: $primary-color;
+        color: $text-white;
+
+        &:hover {
+          background: darken($primary-color, 10%);
+        }
+      }
+
+      .btn-reset {
+        background: #6c757d;
+        color: $text-white;
+
+        &:hover {
+          background: darken(#6c757d, 10%);
+        }
+      }
+    }
+  }
+
+  // ========== LOADING / ERROR / NO DATA ==========
   .loading {
     @include flex-center;
     padding: $spacing-xxl;
@@ -78,6 +172,7 @@
     font-size: 18px;
   }
 
+  // ========== DATA TABLE ==========
   .data-table {
     width: 100%;
     border-collapse: collapse;
@@ -209,27 +304,37 @@
       .btn-edit {
         background: #3498db;
         color: #fff;
+
+        &:hover {
+          background: darken(#3498db, 10%);
+        }
       }
 
       .btn-delete {
         background: #e74c3c;
         color: #fff;
+
+        &:hover {
+          background: darken(#e74c3c, 10%);
+        }
       }
     }
   }
+
+  // ========== NUMBER COLUMN ==========
+  .data-table thead th.number-column,
+  .data-table tbody td.number-column {
+    width: 1%;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+    padding-left: 6px;
+    padding-right: 6px;
+    text-align: center;
+  }
 }
 
-.table-container .data-table thead th.number-column,
-.table-container .data-table tbody td.number-column {
-  width: 1%;
-  white-space: nowrap !important;
-  word-break: keep-all !important;
-  overflow-wrap: normal !important;
-  padding-left: 6px;
-  padding-right: 6px;
-  text-align: center;
-}
-
+// ========== PAGINATION ==========
 .pagination {
   display: flex;
   justify-content: center;

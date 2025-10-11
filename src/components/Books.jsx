@@ -1,147 +1,178 @@
 import React, { useEffect, useState } from "react";
-import { getAllBooks, getBookSortTypes, deleteBook } from "../service/service";
-import { useNavigate } from "react-router-dom";
+import { 
+  getAllBooks, 
+  getBookSortTypes, 
+  getFilteredAndSortedBooks,
+  deleteBook,
+  getAllAuthors 
+} from "../service/service";
+import BooksHeader from "./BooksHeader";
+import BooksFilter from "./BooksFilter";
+import BooksList from "./BooksList";
 
 const Books = () => {
   const [books, setBooks] = useState([]);
   const [sortTypes, setSortTypes] = useState([]);
+  const [authors, setAuthors] = useState([]);
   const [selectedSortType, setSelectedSortType] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
+  const [showFilters, setShowFilters] = useState(false);
+  
+  const [filters, setFilters] = useState({
+    title: "",
+    publishedDateFrom: "",
+    publishedDateTo: "",
+    authorId: "",
+    authorName: "",
+    authorBirthDateFrom: "",
+    authorBirthDateTo: ""
+  });
 
-  const fetchSortTypes = async () => {
-    try {
-      const data = await getBookSortTypes();
-      console.log("Book sort types:", data);
-      setSortTypes(Array.isArray(data) ? data : []);
-    } catch (e) {
-      console.error("Failed to fetch sort types:", e);
-    }
-  };
-
-  const fetchBooks = async (sortType) => {
-    try {
-      setLoading(true);
-      const data = await getAllBooks(sortType);
-      setBooks(Array.isArray(data) ? data : []);
-    } catch (e) {
-      console.error("Books fetch error:", e);
-      setError("Failed to fetch books.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [appliedFilters, setAppliedFilters] = useState({
+    title: "",
+    publishedDateFrom: "",
+    publishedDateTo: "",
+    authorId: "",
+    authorName: "",
+    authorBirthDateFrom: "",
+    authorBirthDateTo: ""
+  });
 
   useEffect(() => {
-    fetchSortTypes();
+    const fetchInitialData = async () => {
+      try {
+        const [sortTypesData, authorsData] = await Promise.all([
+          getBookSortTypes(),
+          getAllAuthors(1, 100)
+        ]);
+        
+        setSortTypes(Array.isArray(sortTypesData) ? sortTypesData : []);
+        const authorsList = authorsData?.items || [];
+        setAuthors(Array.isArray(authorsList) ? authorsList : []);
+      } catch (e) {
+        console.error("Failed to fetch initial data:", e);
+      }
+    };
+
+    fetchInitialData();
   }, []);
 
   useEffect(() => {
-    fetchBooks(selectedSortType);
-  }, [selectedSortType]);
+    const fetchBooks = async () => {
+      try {
+        setLoading(true);
+        
+        const hasFilters = Object.values(appliedFilters).some(value => value !== "");
+        let data;
+        
+        if (hasFilters) {
+          const filterDto = {
+            title: appliedFilters.title || null,
+            publishedDateFrom: appliedFilters.publishedDateFrom ? `${appliedFilters.publishedDateFrom}T00:00:00Z` : null,
+            publishedDateTo: appliedFilters.publishedDateTo ? `${appliedFilters.publishedDateTo}T23:59:59Z` : null,
+            authorId: appliedFilters.authorId ? parseInt(appliedFilters.authorId) : null,
+            authorName: appliedFilters.authorName || null,
+            authorBirthDateFrom: appliedFilters.authorBirthDateFrom ? `${appliedFilters.authorBirthDateFrom}T00:00:00Z` : null,
+            authorBirthDateTo: appliedFilters.authorBirthDateTo ? `${appliedFilters.authorBirthDateTo}T23:59:59Z` : null
+          };
+          
+          data = await getFilteredAndSortedBooks(filterDto, selectedSortType);
+        } else {
+          data = await getAllBooks(selectedSortType);
+        }
+        
+        setBooks(Array.isArray(data) ? data : []);
+      } catch (e) {
+        console.error("Books fetch error:", e);
+        setError("Failed to fetch books.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBooks();
+  }, [selectedSortType, appliedFilters]);
 
   const handleSortChange = (e) => {
-    const newSortType = parseInt(e.target.value, 10);
-    setSelectedSortType(newSortType);
+    setSelectedSortType(parseInt(e.target.value, 10));
+  };
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleApplyFilters = () => {
+    setAppliedFilters(filters);
+  };
+
+  const handleResetFilters = () => {
+    const emptyFilters = {
+      title: "",
+      publishedDateFrom: "",
+      publishedDateTo: "",
+      authorId: "",
+      authorName: "",
+      authorBirthDateFrom: "",
+      authorBirthDateTo: ""
+    };
+    
+    setFilters(emptyFilters);
+    setAppliedFilters(emptyFilters);
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this book?")) return;
     try {
       await deleteBook(id);
-      setBooks((prev) => prev.filter((b) => b.id !== id));
+      setBooks(prev => prev.filter(b => b.id !== id));
     } catch (e) {
       console.error("Delete error:", e);
       alert("Failed to delete book.");
     }
   };
 
-  if (loading)
+  if (loading) {
     return (
       <div className="table-container">
         <div className="loading">Loading books...</div>
       </div>
     );
-  if (error)
+  }
+
+  if (error) {
     return (
       <div className="table-container">
         <div className="error">{error}</div>
       </div>
     );
+  }
 
   return (
     <div className="table-container">
-      <div className="table-header">
-        <h2 className="page-title">📖 Books</h2>
-        
-        <div className="sort-container">
-          <label className="sort-label" htmlFor="sortType">Sort by:</label>
-          <select
-            id="sortType"
-            className="sort-select"
-            value={selectedSortType}
-            onChange={handleSortChange}
-          >
-            {sortTypes.map((option) => (
-              <option key={option.key} value={option.key}>
-                {option.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+      <BooksHeader
+        sortTypes={sortTypes}
+        selectedSortType={selectedSortType}
+        onSortChange={handleSortChange}
+        onToggleFilters={() => setShowFilters(!showFilters)}
+        showFilters={showFilters}
+      />
 
-      {books.length === 0 ? (
-        <div className="no-data">No books available.</div>
-      ) : (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th className="number-column">#</th>
-              <th className="title-column">Title</th>
-              <th className="isbn-column">ISBN</th>
-              <th className="date-column">Publication Date</th>
-              <th className="pages-column">Pages</th>
-              <th className="author-column">Author</th>
-              <th className="publisher-column">Publisher</th>
-              <th className="actions-column">Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {books.map((book, index) => (
-              <tr key={book.id}>
-                <td className="number-column">{index + 1}</td>
-                <td className="title-column">{book.title}</td>
-                <td className="isbn-column">{book.isbn}</td>
-                <td className="date-column">
-                  {book.publishedDate
-                    ? new Date(book.publishedDate).toLocaleDateString("sr-RS")
-                    : "N/A"}
-                </td>
-                <td className="pages-column">{book.pageCount}</td>
-                <td className="author-column">{book.authorFullName || "Unknown"}</td>
-                <td className="publisher-column">{book.publisherName || "Unknown"}</td>
-                <td className="actions-column">
-                  <button
-                    className="btn-edit"
-                    onClick={() => navigate(`/edit-book/${book.id}`)}
-                  >
-                    ✏️ Edit
-                  </button>
-                  <button
-                    className="btn-delete"
-                    onClick={() => handleDelete(book.id)}
-                  >
-                    🗑️ Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {showFilters && (
+        <BooksFilter
+          filters={filters}
+          authors={authors}
+          onFilterChange={handleFilterChange}
+          onApplyFilters={handleApplyFilters}
+          onResetFilters={handleResetFilters}
+        />
       )}
+
+      <BooksList
+        books={books}
+        onDelete={handleDelete}
+      />
     </div>
   );
 };

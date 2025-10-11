@@ -36,12 +36,19 @@ const BookForm = () => {
 
   const loadInitialData = async () => {
     try {
-      const [pubs, auths] = await Promise.all([getAllPublishers(), getAllAuthors()]);
+      const [pubs, auths] = await Promise.all([
+        getAllPublishers(), 
+        getAllAuthors(1, 100)
+      ]);
+      
       const pubsArr = Array.isArray(pubs) ? pubs : [];
-      const authsArr = Array.isArray(auths) ? auths : [];
+    
+      const authsArr = auths?.items || [];
+      
       setPublishers(pubsArr);
-      setAuthors(authsArr);
+      setAuthors(Array.isArray(authsArr) ? authsArr : []);
     } catch (e) {
+      console.error("Failed to load data:", e);
       setMessage("Failed to load data.");
     }
   };
@@ -64,6 +71,7 @@ const BookForm = () => {
         publisherId: book.publisherId?.toString() || "",
       }));
     } catch (e) {
+      console.error("Failed to load book:", e);
       setMessage("Failed to load book.");
     }
   };
@@ -125,6 +133,7 @@ const BookForm = () => {
       setAuthors(prev => [...prev, newAuthor]);
       return newAuthor.id;
     } catch (e) {
+      console.error("Failed to create author:", e);
       throw new Error("Failed to create author");
     }
   };
@@ -143,6 +152,7 @@ const BookForm = () => {
       setPublishers(prev => [...prev, newPublisher]);
       return newPublisher.id;
     } catch (e) {
+      console.error("Failed to create publisher:", e);
       throw new Error("Failed to create publisher");
     }
   };
@@ -219,6 +229,7 @@ const BookForm = () => {
 
       navigate("/books");
     } catch (e) {
+      console.error("Submit error:", e);
       setMessage(`Error ${id ? 'updating' : 'creating'} book. ${e.message || 'Please try again.'}`);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {

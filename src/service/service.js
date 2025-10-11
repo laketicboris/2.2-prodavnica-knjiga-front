@@ -2,6 +2,7 @@ import AxiosConfig from "../config/axios.config";
 
 // Publishers
 const PUBLISHERS_RESOURCE = "api/Publishers";
+
 export async function getAllPublishers(sortType = 0) {
   const { data } = await AxiosConfig.get(`${PUBLISHERS_RESOURCE}?sortType=${sortType}`);
   return data;
@@ -34,22 +35,32 @@ export async function deletePublisher(id) {
 
 // Books
 const BOOKS_RESOURCE = "api/Books";
-export async function getAllBooks() {
-  const { data } = await AxiosConfig.get(BOOKS_RESOURCE);
+
+export async function getAllBooks(sortType = 0) {
+  const { data } = await AxiosConfig.get(`${BOOKS_RESOURCE}?sortType=${sortType}`);
   return data;
 }
+
+export async function getBookSortTypes() {
+  const { data } = await AxiosConfig.get(`${BOOKS_RESOURCE}/sortTypes`);
+  return data;
+}
+
 export async function getBookById(id) {
   const { data } = await AxiosConfig.get(`${BOOKS_RESOURCE}/${id}`);
   return data;
 }
+
 export async function createBook(bookData) {
   const { data } = await AxiosConfig.post(BOOKS_RESOURCE, bookData);
   return data;
 }
+
 export async function updateBook(id, bookData) {
   const { data } = await AxiosConfig.put(`${BOOKS_RESOURCE}/${id}`, bookData);
   return data;
 }
+
 export async function deleteBook(id) {
   const { data } = await AxiosConfig.delete(`${BOOKS_RESOURCE}/${id}`);
   return data;

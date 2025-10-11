@@ -1,17 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { getAllBooks, deleteBook } from "../service/service";
+import { getAllBooks, getBookSortTypes, deleteBook } from "../service/service";
 import { useNavigate } from "react-router-dom";
 
 const Books = () => {
   const [books, setBooks] = useState([]);
+  const [sortTypes, setSortTypes] = useState([]);
+  const [selectedSortType, setSelectedSortType] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const fetchBooks = async () => {
+  const fetchSortTypes = async () => {
+    try {
+      const data = await getBookSortTypes();
+      console.log("Book sort types:", data);
+      setSortTypes(Array.isArray(data) ? data : []);
+    } catch (e) {
+      console.error("Failed to fetch sort types:", e);
+    }
+  };
+
+  const fetchBooks = async (sortType) => {
     try {
       setLoading(true);
-      const data = await getAllBooks();
+      const data = await getAllBooks(sortType);
       setBooks(Array.isArray(data) ? data : []);
     } catch (e) {
       console.error("Books fetch error:", e);
@@ -22,8 +34,17 @@ const Books = () => {
   };
 
   useEffect(() => {
-    fetchBooks();
+    fetchSortTypes();
   }, []);
+
+  useEffect(() => {
+    fetchBooks(selectedSortType);
+  }, [selectedSortType]);
+
+  const handleSortChange = (e) => {
+    const newSortType = parseInt(e.target.value, 10);
+    setSelectedSortType(newSortType);
+  };
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this book?")) return;
@@ -51,7 +72,26 @@ const Books = () => {
 
   return (
     <div className="table-container">
-      <h2 className="page-title">📖 Books</h2>
+      <div className="table-header">
+        <h2 className="page-title">📖 Books</h2>
+        
+        <div className="sort-container">
+          <label className="sort-label" htmlFor="sortType">Sort by:</label>
+          <select
+            id="sortType"
+            className="sort-select"
+            value={selectedSortType}
+            onChange={handleSortChange}
+          >
+            {sortTypes.map((option) => (
+              <option key={option.key} value={option.key}>
+                {option.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       {books.length === 0 ? (
         <div className="no-data">No books available.</div>
       ) : (
@@ -81,12 +121,8 @@ const Books = () => {
                     : "N/A"}
                 </td>
                 <td className="pages-column">{book.pageCount}</td>
-                <td className="author-column">
-                  {book.author ? book.author.fullName : "Unknown Author"}
-                </td>
-                <td className="publisher-column">
-                  {book.publisher ? book.publisher.name : "Unknown Publisher"}
-                </td>
+                <td className="author-column">{book.authorFullName || "Unknown"}</td>
+                <td className="publisher-column">{book.publisherName || "Unknown"}</td>
                 <td className="actions-column">
                   <button
                     className="btn-edit"

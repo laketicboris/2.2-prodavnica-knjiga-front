@@ -1,8 +1,23 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import UserContext from "../components/User/UserContext.jsx";
 
 const BooksList = ({ books, onDelete }) => {
   const navigate = useNavigate();
+  const { user } = useContext(UserContext);
+  const [role, setRole] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        setRole(payload.role);
+      } catch (error) {
+        console.error('Nevalidan token');
+      }
+    }
+  }, []);
 
   if (books.length === 0) {
     return <div className="no-data">No books found matching the criteria.</div>;
@@ -19,7 +34,12 @@ const BooksList = ({ books, onDelete }) => {
           <th className="pages-column">Pages</th>
           <th className="author-column">Author</th>
           <th className="publisher-column">Publisher</th>
-          <th className="actions-column">Actions</th>
+          {role === "Editor" && (
+            <>
+              <th className="actions-column">Edit</th>
+              <th className="actions-column">Delete</th>
+            </>
+          )}
         </tr>
       </thead>
 
@@ -37,20 +57,26 @@ const BooksList = ({ books, onDelete }) => {
             <td className="pages-column">{book.pageCount}</td>
             <td className="author-column">{book.authorFullName || "Unknown"}</td>
             <td className="publisher-column">{book.publisherName || "Unknown"}</td>
-            <td className="actions-column">
-              <button
-                className="btn-edit"
-                onClick={() => navigate(`/edit-book/${book.id}`)}
-              >
-                ✏️ Edit
-              </button>
-              <button
-                className="btn-delete"
-                onClick={() => onDelete(book.id)}
-              >
-                🗑️ Delete
-              </button>
-            </td>
+            {role === "Editor" && (
+              <>
+                <td className="actions-column">
+                  <button
+                    className="btn-edit"
+                    onClick={() => navigate(`/edit-book/${book.id}`)}
+                  >
+                    ✏️ Edit
+                  </button>
+                </td>
+                <td className="actions-column">
+                  <button
+                    className="btn-delete"
+                    onClick={() => onDelete(book.id)}
+                  >
+                    🗑️ Delete
+                  </button>
+                </td>
+              </>
+            )}
           </tr>
         ))}
       </tbody>

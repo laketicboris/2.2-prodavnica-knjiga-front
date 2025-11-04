@@ -8,24 +8,43 @@
   margin-bottom: $spacing-lg;
 
   .nav {
-    display: flex;
-    gap: $spacing-lg;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
+    gap: $spacing-lg;
+    width: 100%;
 
     .logo {
       font-size: 24px;
       font-weight: bold;
       color: $text-white;
-      margin-right: $spacing-xl;
       display: flex;
       align-items: center;
       gap: $spacing-xs;
+      flex-shrink: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: $spacing-md;
+      justify-content: left; 
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .nav-auth {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      justify-self: end;
+      flex-shrink: 0;
     }
 
     .nav-link {
       @include button-style;
       color: rgba($text-white, 0.9);
       border: 1px solid transparent;
+      white-space: nowrap;
 
       &:hover {
         background: rgba($text-white, 0.1);
@@ -37,6 +56,102 @@
         background: rgba($text-white, 0.2);
         color: $text-white;
         border-color: rgba($text-white, 0.3);
+      }
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: $spacing-xs;
+      color: rgba($text-white, 0.9);
+      font-size: 14px;
+      padding: $spacing-xs $spacing-sm;
+      background: rgba($text-white, 0.1);
+      border-radius: 6px;
+      border: 1px solid rgba($text-white, 0.2);
+      white-space: nowrap;
+      
+      .username {
+        font-weight: 600;
+        color: $text-white;
+      }
+      
+      .user-role {
+        color: rgba($text-white, 0.7);
+        font-size: 12px;
+        background: rgba($text-white, 0.1);
+        padding: 2px $spacing-xs;
+        border-radius: 4px;
+        border: 1px solid rgba($text-white, 0.2);
+      }
+    }
+
+    .btn-secondary {
+      @include button-style;
+      background: rgba($text-white, 0.1);
+      color: rgba($text-white, 0.9);
+      border: 1px solid rgba($text-white, 0.2);
+      font-size: 13px;
+      white-space: nowrap;
+
+      &:hover {
+        background: rgba($text-white, 0.2);
+        color: $text-white;
+        transform: translateY(-1px);
+      }
+    }
+
+    @media (max-width: 1024px) {
+      grid-template-columns: auto 1fr auto;
+      gap: $spacing-sm;
+
+      .nav-links {
+        gap: $spacing-sm;
+      }
+    }
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto auto;
+      text-align: center;
+      gap: $spacing-sm;
+
+      .logo {
+        justify-self: center;
+      }
+
+      .nav-links {
+        justify-content: center;
+        gap: $spacing-xs;
+      }
+
+      .nav-auth {
+        justify-self: center;
+        flex-direction: column;
+        gap: $spacing-xs;
+
+        .user-info {
+          flex-direction: column;
+          gap: 2px;
+          padding: $spacing-xs;
+        }
+      }
+
+      .nav-link {
+        padding: $spacing-xs $spacing-sm;
+        font-size: 13px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .nav-links {
+        flex-direction: column;
+        gap: $spacing-xs;
+      }
+
+      .nav-link {
+        width: 100%;
+        text-align: center;
       }
     }
   }

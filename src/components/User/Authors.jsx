@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getAllAuthors } from "../service/service";
+import { getAllAuthors } from "../../service/service";
 
 const Authors = () => {
   const [authors, setAuthors] = useState([]);

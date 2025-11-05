@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import UserContext from '../components/User/UserContext.jsx';
-import AxiosConfig from '../config/axios.config.js';
+import UserContext from './UserContext.jsx';
+import AxiosConfig from '../../config/axios.config.js';
 
 const Register = () => {
   const { setUser } = useContext(UserContext);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getAllPublishers, getPublisherSortTypes } from "../service/service";
+import { getAllPublishers, getPublisherSortTypes } from "../../service/service";
 
 const Publishers = () => {
   const [publishers, setPublishers] = useState([]);

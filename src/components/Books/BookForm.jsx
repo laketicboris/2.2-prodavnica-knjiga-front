@@ -7,7 +7,7 @@ import {
   updateBook,
   createAuthor,
   createPublisher,
-} from "../service/service";
+} from "../../service/service";
 import { useNavigate, useParams } from "react-router-dom";
 
 const BookForm = () => {

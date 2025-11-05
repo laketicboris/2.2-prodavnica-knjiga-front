@@ -1,7 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import UserContext from '../components/User/UserContext.jsx';
-import AxiosConfig from '../config/axios.config.js';
+import UserContext from '../User/UserContext.jsx';
+import AxiosConfig from '../../config/axios.config.js';
+import GoogleLoginButton from '../Google/GoogleLoginButton.jsx';
 
 const Login = () => {
   const { setUser } = useContext(UserContext);
@@ -49,6 +50,13 @@ const Login = () => {
       <form onSubmit={handleLogin} className="form-card">
         <h2 className="form-title">🔐 Login</h2>
         {error && <div className="message error">{error}</div>}
+        
+        <div className="google-auth-section">
+          <GoogleLoginButton />
+          <div className="divider">
+            <span>or</span>
+          </div>
+        </div>
         
         <div className="form-group">
           <input 

@@ -5,7 +5,7 @@ import {
   getFilteredAndSortedBooks,
   deleteBook,
   getAllAuthors 
-} from "../service/service";
+} from "../../service/service";
 import BooksHeader from "./BooksHeader";
 import BooksFilter from "./BooksFilter";
 import BooksList from "./BooksList";
@@ -19,7 +19,6 @@ const Books = () => {
   const [error, setError] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   
-  // role će se čuvati uloga ulogovanog korisnika
   const [role, setRole] = useState(null);
   
   const [filters, setFilters] = useState({
@@ -60,8 +59,6 @@ const Books = () => {
 
     fetchInitialData();
     
-    // useEffect će, pored fetchData() koja dobavlja sve knjige, preuzeti token iz localStorage
-    // iz tokena će se izvući uloga i smestiti u role pomoću setRole
     const token = localStorage.getItem('token');
     if (token) {
       try {

@@ -1,7 +1,7 @@
 import React, { useEffect, useContext } from "react";
 import { NavLink } from "react-router-dom";
-import UserContext from "../components/User/UserContext.jsx";
-import LogoutButton from "./LogoutButton";
+import UserContext from "../User/UserContext.jsx";
+import LogoutButton from "../LogoutButton.jsx";
 
 const Header = () => {
   const { user, setUser } = useContext(UserContext);

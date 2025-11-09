@@ -102,3 +102,29 @@ export async function deleteAuthor(id) {
   const { data } = await AxiosConfig.delete(`${AUTHORS_RESOURCE}/${id}`);
   return data;
 }
+
+// Volumes (Comic Vine)
+const VOLUMES_RESOURCE = "api/Volumes";
+
+export async function searchVolumes(query) {
+  const { data } = await AxiosConfig.get(`${VOLUMES_RESOURCE}/search?query=${encodeURIComponent(query)}`);
+  return data;
+}
+
+// Issues (Comic Vine)
+const ISSUES_RESOURCE = "api/Issues";
+
+export async function searchIssuesByVolume(volumeId) {
+  const { data } = await AxiosConfig.get(`${ISSUES_RESOURCE}/search?volumeId=${volumeId}`);
+  return data;
+}
+
+export async function createIssue(issueData) {
+  const { data } = await AxiosConfig.post(ISSUES_RESOURCE, issueData);
+  return data;
+}
+
+export async function getIssueById(id) {
+  const { data } = await AxiosConfig.get(`${ISSUES_RESOURCE}/${id}`);
+  return data;
+}

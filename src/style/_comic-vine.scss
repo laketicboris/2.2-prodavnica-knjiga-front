@@ -1,0 +1,408 @@
+// Comic Vine specific styles - following existing design system
+
+// ========== SEARCH SECTION ==========
+.search-section {
+  background: white;
+  padding: $spacing-xl;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-lg;
+  @include card-shadow;
+
+  .search-input-group {
+    display: flex;
+    gap: $spacing-md;
+    margin-bottom: $spacing-md;
+
+    .search-input {
+      flex: 1;
+      padding: $spacing-sm $spacing-md;
+      border: 1px solid $border-color;
+      border-radius: $radius-sm;
+      font-size: 16px;
+      color: $text-dark;
+      transition: all $transition-fast;
+
+      &:focus {
+        outline: none;
+        border-color: $primary-color;
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+      }
+
+      &::placeholder {
+        color: $text-light;
+        font-style: italic;
+      }
+    }
+
+    .search-btn {
+      @include button-style;
+      background: $primary-color;
+      color: $text-white;
+      min-width: 140px;
+      white-space: nowrap;
+      font-size: 16px;
+
+      &:hover:not(:disabled) {
+        background: darken($primary-color, 10%);
+        transform: translateY(-2px);
+      }
+
+      &:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+    }
+  }
+}
+
+// ========== SEARCH RESULTS ==========
+.search-results {
+  .results-header {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: $spacing-md $spacing-lg;
+    border-radius: $radius-sm;
+    margin-bottom: $spacing-lg;
+    font-weight: 600;
+    color: $text-dark;
+    border-left: 4px solid $primary-color;
+    font-size: 16px;
+
+    span {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+    }
+  }
+}
+
+// ========== ACTION BUTTONS IN TABLE ==========
+.data-table {
+  .btn-secondary {
+    @include button-style;
+    background: $secondary-color;
+    color: $text-white;
+    font-size: 14px;
+    padding: 8px 16px;
+    margin: 0 2px;
+
+    &:hover {
+      background: darken($secondary-color, 10%);
+      transform: translateY(-1px);
+    }
+  }
+
+  .btn-primary {
+    @include button-style;
+    background: $primary-color;
+    color: $text-white;
+    font-size: 14px;
+    padding: 8px 16px;
+    margin: 0 2px;
+
+    &:hover {
+      background: darken($primary-color, 10%);
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// ========== FORM OVERLAY FOR ISSUE CREATION ==========
+.form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 1000;
+  padding: $spacing-lg;
+  overflow-y: auto;
+
+  .form-container {
+    background: white;
+    border-radius: $radius-md;
+    box-shadow: 0 10px 40px $shadow-dark;
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 0;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+
+    .form-title {
+      @include gradient-bg($primary-color, $secondary-color);
+      color: $text-white;
+      margin: 0;
+      padding: $spacing-lg;
+      border-radius: $radius-md $radius-md 0 0;
+      font-size: 24px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .issue-preview {
+      padding: $spacing-xl;
+      background: #f8fafc;
+      border-bottom: 1px solid $border-color;
+
+      h4 {
+        margin: 0 0 $spacing-md 0;
+        color: $text-dark;
+        font-weight: 600;
+        font-size: 18px;
+      }
+
+      p {
+        margin: $spacing-sm 0;
+        color: $text-light;
+        line-height: 1.5;
+
+        strong {
+          color: $text-dark;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .form-card {
+      padding: $spacing-xl;
+      border-radius: 0 0 $radius-md $radius-md;
+      box-shadow: none;
+
+      .form-group {
+        margin-bottom: $spacing-lg;
+
+        .form-label {
+          display: block;
+          font-weight: 500;
+          margin-bottom: $spacing-sm;
+          color: $text-dark;
+          font-size: 14px;
+        }
+
+        .form-input,
+        textarea.form-input {
+          width: 100%;
+          padding: $spacing-sm $spacing-md;
+          border: 1px solid $border-color;
+          border-radius: $radius-sm;
+          font-size: 16px;
+          color: $text-dark;
+          font-family: inherit;
+          resize: vertical;
+          transition: all $transition-fast;
+
+          &:focus {
+            outline: none;
+            border-color: $primary-color;
+            box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+          }
+
+          &::placeholder {
+            color: $text-light;
+            font-style: italic;
+          }
+        }
+
+        textarea.form-input {
+          min-height: 80px;
+        }
+      }
+
+      .form-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: $spacing-md;
+        margin-top: $spacing-xl;
+
+        .btn-primary,
+        .btn-secondary {
+          @include button-style;
+          font-size: 16px;
+          padding: $spacing-md $spacing-lg;
+
+          &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+          }
+        }
+
+        .btn-primary {
+          background: $primary-color;
+          color: $text-white;
+
+          &:hover:not(:disabled) {
+            background: darken($primary-color, 10%);
+            transform: translateY(-2px);
+          }
+        }
+
+        .btn-secondary {
+          background: #6c757d;
+          color: $text-white;
+
+          &:hover:not(:disabled) {
+            background: darken(#6c757d, 10%);
+            transform: translateY(-2px);
+          }
+        }
+      }
+    }
+
+    .message {
+      margin: 0 $spacing-lg $spacing-md $spacing-lg;
+      padding: $spacing-md;
+      border-radius: $radius-sm;
+      font-size: 14px;
+      font-weight: 500;
+
+      &.success {
+        background: #e6fffa;
+        color: #0d9488;
+        border: 1px solid #0d9488;
+      }
+
+      &.error {
+        background: #fdf2f2;
+        color: #e74c3c;
+        border: 1px solid #fecaca;
+      }
+    }
+  }
+}
+
+// ========== PAGE HEADER IMPROVEMENTS ==========
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-xl;
+
+  .page-title {
+    color: $text-dark;
+    font-size: 32px;
+    margin: 0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
+  .btn-secondary {
+    @include button-style;
+    background: #6c757d;
+    color: $text-white;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-sm;
+    font-size: 14px;
+
+    &:hover {
+      background: darken(#6c757d, 10%);
+      transform: translateY(-2px);
+    }
+  }
+}
+
+// ========== LOADING / ERROR / NO DATA STATES ==========
+.loading {
+  @include flex-center;
+  padding: $spacing-xxl;
+  font-size: 18px;
+  color: $text-light;
+}
+
+.no-data {
+  text-align: center;
+  padding: $spacing-xxl;
+  color: $text-light;
+  font-size: 18px;
+  background: #f8fafc;
+  border-radius: $radius-sm;
+  border: 1px dashed $border-color;
+}
+
+// ========== RESPONSIVE DESIGN ==========
+@media (max-width: $tablet) {
+  .search-section {
+    padding: $spacing-lg;
+
+    .search-input-group {
+      flex-direction: column;
+
+      .search-btn {
+        min-width: auto;
+      }
+    }
+  }
+
+  .form-overlay {
+    padding: $spacing-sm;
+
+    .form-container {
+      margin: 10px auto;
+      max-height: calc(100vh - 20px);
+
+      .issue-preview,
+      .form-card {
+        padding: $spacing-lg;
+      }
+
+      .form-card .form-buttons {
+        flex-direction: column-reverse;
+
+        .btn-primary,
+        .btn-secondary {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    }
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing-md;
+
+    .page-title {
+      text-align: center;
+    }
+
+    .btn-secondary {
+      align-self: center;
+    }
+  }
+
+  .data-table {
+    .btn-primary,
+    .btn-secondary {
+      font-size: 12px;
+      padding: 6px 10px;
+      margin: 1px;
+    }
+  }
+}
+
+@media (max-width: $mobile) {
+  .search-section {
+    padding: $spacing-md;
+  }
+
+  .form-overlay {
+    padding: $spacing-xs;
+
+    .form-container {
+      .issue-preview,
+      .form-card {
+        padding: $spacing-md;
+      }
+    }
+  }
+}

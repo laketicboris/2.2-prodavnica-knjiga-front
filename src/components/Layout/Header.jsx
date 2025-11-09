@@ -30,12 +30,15 @@ const Header = () => {
         
         <div className="nav-links">
           <NavLink to="/home" className={linkClass}>🏠 Home</NavLink>
-          <NavLink to="/authors" className={linkClass}>✍️ Authors</NavLink>
+          <NavLink to="/authors" className={linkClass}>✏️ Authors</NavLink>
           <NavLink to="/publishers" className={linkClass}>🏢 Publishers</NavLink>
           <NavLink to="/books" className={linkClass}>📖 Books</NavLink>
           
-          {user && (
-            <NavLink to="/create-book" className={linkClass}>➕ Create Book</NavLink>
+          {user && user.role === "Editor" && (
+            <>
+              <NavLink to="/create-book" className={linkClass}>➕ Create Book</NavLink>
+              <NavLink to="/volumes/search" className={linkClass}>🔍 Search Volumes</NavLink>
+            </>
           )}
         </div>
         

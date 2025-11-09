@@ -11,6 +11,8 @@ import Login from "./components/Login/Login.jsx";
 import Register from "./components/User/Register.jsx";
 import GoogleAuthSuccess from "./components/Google/GoogleAuthSuccess.jsx";
 import GoogleAuthError from "./components/Google/GoogleAuthError.jsx";
+import SearchVolumes from "./components/ComicVine/Searchvolumes.jsx";
+import SearchIssues from "./components/ComicVine/SearchIssues.jsx";
 import UserContext from "./components/User/UserContext.jsx";
 import './style/main.scss';
 
@@ -30,6 +32,10 @@ function App() {
           <Route path="/authors" element={<Authors />} />
           <Route path="/create-book" element={<BookForm />} />
           <Route path="/edit-book/:id" element={<BookForm />} />
+          
+          {/* Comic Vine Routes */}
+          <Route path="/volumes/search" element={<SearchVolumes />} />
+          <Route path="/issues/search/:volumeId" element={<SearchIssues />} />
           
           {/* Google Authentication Routes */}
           <Route path="/auth/google-success" element={<GoogleAuthSuccess />} />

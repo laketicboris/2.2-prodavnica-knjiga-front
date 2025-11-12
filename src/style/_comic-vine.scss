@@ -406,3 +406,83 @@
     }
   }
 }
+
+.image-column {
+  width: 70px;
+  text-align: center;
+  padding: $spacing-sm !important;
+  vertical-align: middle;
+}
+
+.issue-cover-thumbnail {
+  width: 45px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: $radius-sm;
+  border: 1px solid $border-color;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all $transition-fast;
+  
+  &:hover {
+    transform: scale(406%);
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+}
+
+.no-image {
+  font-size: 11px;
+  color: $text-light;
+  font-style: italic;
+  padding: $spacing-xs;
+}
+
+// Preview Modal Image
+.issue-preview {
+  .preview-image {
+    margin: $spacing-md 0;
+    text-align: center;
+  }
+
+  .issue-cover-preview {
+    max-width: 120px;
+    max-height: 160px;
+    object-fit: cover;
+    border-radius: $radius-sm;
+    border: 2px solid $border-color;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+}
+
+// ========== RESPONSIVE FOR IMAGES ==========
+@media (max-width: $tablet) {
+  .issue-cover-thumbnail {
+    width: 35px;
+    height: 50px;
+  }
+  
+  .image-column {
+    width: 55px;
+  }
+  
+  .issue-preview .issue-cover-preview {
+    max-width: 100px;
+    max-height: 130px;
+  }
+}
+
+@media (max-width: $mobile) {
+  .issue-cover-thumbnail {
+    width: 30px;
+    height: 45px;
+  }
+  
+  .image-column {
+    width: 45px;
+  }
+  
+  .issue-preview .issue-cover-preview {
+    max-width: 80px;
+    max-height: 110px;
+  }
+}

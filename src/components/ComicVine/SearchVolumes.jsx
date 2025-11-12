@@ -9,6 +9,11 @@ const SearchVolumes = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
@@ -18,7 +23,7 @@ const SearchVolumes = () => {
     }
   }, [user, navigate]);
 
-  const handleSearch = async () => {
+  const handleSearch = async (page = 1) => {
     if (!query.trim()) {
       setError("Enter search query.");
       return;
@@ -29,8 +34,14 @@ const SearchVolumes = () => {
     setHasSearched(true);
 
     try {
-      const data = await searchVolumes(query.trim());
-      setVolumes(Array.isArray(data) ? data : []);
+      const data = await searchVolumes(query.trim(), page);
+      
+      setVolumes(Array.isArray(data.data) ? data.data : []);
+      setCurrentPage(data.currentPage || 1);
+      setTotalPages(data.totalPages || 0);
+      setTotalCount(data.totalCount || 0);
+      setPageSize(data.pageSize || 10);
+      
     } catch (err) {
       console.error("Volumes search error:", err);
       setError("Failed to search volumes.");
@@ -41,7 +52,24 @@ const SearchVolumes = () => {
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      handleSearch();
+      setCurrentPage(1);
+      handleSearch(1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      const newPage = currentPage - 1;
+      setCurrentPage(newPage);
+      handleSearch(newPage);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      const newPage = currentPage + 1;
+      setCurrentPage(newPage);
+      handleSearch(newPage);
     }
   };
 
@@ -61,7 +89,7 @@ const SearchVolumes = () => {
           />
           <button 
             className="btn-primary search-btn"
-            onClick={handleSearch}
+            onClick={() => handleSearch(1)}
             disabled={loading}
           >
             {loading ? "Searching..." : "🔍 Search"}
@@ -80,7 +108,7 @@ const SearchVolumes = () => {
           ) : (
             <div className="search-results">
               <div className="results-header">
-                <span>Found {volumes.length} volume(s)</span>
+                <span>Found {totalCount} volume(s) - Showing page {currentPage} of {totalPages}</span>
               </div>
               
               <table className="data-table">
@@ -94,7 +122,9 @@ const SearchVolumes = () => {
                 <tbody>
                   {volumes.map((volume, index) => (
                     <tr key={volume.id}>
-                      <td className="number-column">{index + 1}</td>
+                      <td className="number-column">
+                        {(currentPage - 1) * pageSize + index + 1}
+                      </td>
                       <td className="title-column">{volume.name}</td>
                       <td className="actions-column">
                         <button
@@ -108,6 +138,30 @@ const SearchVolumes = () => {
                   ))}
                 </tbody>
               </table>
+
+              {totalPages > 1 && (
+                <div className="pagination">
+                  <button
+                    className="pagination-btn"
+                    onClick={handlePreviousPage}
+                    disabled={currentPage === 1}
+                  >
+                    ← Previous
+                  </button>
+                  
+                  <span className="pagination-info">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  
+                  <button
+                    className="pagination-btn"
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next →
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </>

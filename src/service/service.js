@@ -36,13 +36,18 @@ export async function deletePublisher(id) {
 // Books
 const BOOKS_RESOURCE = "api/Books";
 
-export async function getAllBooks(sortType = 0) {
-  const { data } = await AxiosConfig.get(`${BOOKS_RESOURCE}?sortType=${sortType}`);
+export async function getAllBooks(sortType = 0, page = 1, pageSize = 10) {
+  const { data } = await AxiosConfig.get(
+    `${BOOKS_RESOURCE}?sortType=${sortType}&page=${page}&pageSize=${pageSize}`
+  );
   return data;
 }
 
-export async function getFilteredAndSortedBooks(filter, sortType = 0) {
-  const { data } = await AxiosConfig.post(`${BOOKS_RESOURCE}/filterAndSort?sortType=${sortType}`, filter);
+export async function getFilteredAndSortedBooks(filter, sortType = 0, page = 1, pageSize = 10) {
+  const { data } = await AxiosConfig.post(
+    `${BOOKS_RESOURCE}/filterAndSort?sortType=${sortType}&page=${page}&pageSize=${pageSize}`,
+    filter
+  );
   return data;
 }
 
@@ -103,21 +108,24 @@ export async function deleteAuthor(id) {
   return data;
 }
 
-// Volumes (Comic Vine)
+// Volumes
 const VOLUMES_RESOURCE = "api/Volumes";
 
-export async function searchVolumes(query) {
-  const { data } = await AxiosConfig.get(`${VOLUMES_RESOURCE}/search?query=${encodeURIComponent(query)}`);
+export async function searchVolumes(query, page = 1) {
+  const { data } = await AxiosConfig.get(`${VOLUMES_RESOURCE}/search?search=${encodeURIComponent(query)}&page=${page}`);
   return data;
 }
 
-// Issues (Comic Vine)
+// Issues
 const ISSUES_RESOURCE = "api/Issues";
 
-export async function searchIssuesByVolume(volumeId) {
-  const { data } = await AxiosConfig.get(`${ISSUES_RESOURCE}/search?volumeId=${volumeId}`);
+export async function searchIssuesByVolume(volumeId, page = 1, pageSize = 10) {
+  const { data } = await AxiosConfig.get(
+    `api/Issues/search?volumeId=${volumeId}&page=${page}&pageSize=${pageSize}`
+  );
   return data;
 }
+
 
 export async function createIssue(issueData) {
   const { data } = await AxiosConfig.post(ISSUES_RESOURCE, issueData);
@@ -126,5 +134,41 @@ export async function createIssue(issueData) {
 
 export async function getIssueById(id) {
   const { data } = await AxiosConfig.get(`${ISSUES_RESOURCE}/${id}`);
+  return data;
+}
+
+// Reviews
+const REVIEWS_RESOURCE = "api/Reviews";
+
+export async function createReview(reviewData) {
+  const { data } = await AxiosConfig.post(REVIEWS_RESOURCE, reviewData);
+  return data;
+}
+
+export async function getReviewsByBookId(bookId) {
+  const { data } = await AxiosConfig.get(`${REVIEWS_RESOURCE}/book/${bookId}`);
+  return data;
+}
+
+export async function checkUserHasReviewed(bookId) {
+  try {
+    const { data } = await AxiosConfig.get(`${REVIEWS_RESOURCE}/check/${bookId}`);
+    return data;
+  } catch (err) {
+    return false;
+  }
+}
+
+export async function getUserReviewForBook(bookId) {
+  try {
+    const { data } = await AxiosConfig.get(`${REVIEWS_RESOURCE}/user/${bookId}`);
+    return data;
+  } catch (err) {
+    return null;
+  }
+}
+
+export async function getReviewById(id) {
+  const { data } = await AxiosConfig.get(`${REVIEWS_RESOURCE}/${id}`);
   return data;
 }

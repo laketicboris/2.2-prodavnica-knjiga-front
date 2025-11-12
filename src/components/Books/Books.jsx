@@ -18,9 +18,13 @@ const Books = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showFilters, setShowFilters] = useState(false);
-  
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+
   const [role, setRole] = useState(null);
-  
+
   const [filters, setFilters] = useState({
     title: "",
     publishedDateFrom: "",
@@ -48,7 +52,6 @@ const Books = () => {
           getBookSortTypes(),
           getAllAuthors(1, 100)
         ]);
-        
         setSortTypes(Array.isArray(sortTypesData) ? sortTypesData : []);
         const authorsList = authorsData?.items || [];
         setAuthors(Array.isArray(authorsList) ? authorsList : []);
@@ -58,52 +61,59 @@ const Books = () => {
     };
 
     fetchInitialData();
-    
+
     const token = localStorage.getItem('token');
     if (token) {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
         setRole(payload.role);
-      } catch (error) {
+      } catch {
         console.error('Nevalidan token');
       }
     }
   }, []);
 
-  useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        setLoading(true);
-        
-        const hasFilters = Object.values(appliedFilters).some(value => value !== "");
-        let data;
-        
-        if (hasFilters) {
-          const filterDto = {
-            title: appliedFilters.title || null,
-            publishedDateFrom: appliedFilters.publishedDateFrom ? `${appliedFilters.publishedDateFrom}T00:00:00Z` : null,
-            publishedDateTo: appliedFilters.publishedDateTo ? `${appliedFilters.publishedDateTo}T23:59:59Z` : null,
-            authorId: appliedFilters.authorId ? parseInt(appliedFilters.authorId) : null,
-            authorName: appliedFilters.authorName || null,
-            authorBirthDateFrom: appliedFilters.authorBirthDateFrom ? `${appliedFilters.authorBirthDateFrom}T00:00:00Z` : null,
-            authorBirthDateTo: appliedFilters.authorBirthDateTo ? `${appliedFilters.authorBirthDateTo}T23:59:59Z` : null
-          };
-          
-          data = await getFilteredAndSortedBooks(filterDto, selectedSortType);
-        } else {
-          data = await getAllBooks(selectedSortType);
-        }
-        
-        setBooks(Array.isArray(data) ? data : []);
-      } catch (e) {
-        console.error("Books fetch error:", e);
-        setError("Failed to fetch books.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchBooks = async (page = currentPage) => {
+    try {
+      setLoading(true);
+      setError("");
 
-    fetchBooks();
+      const hasFilters = Object.values(appliedFilters).some(value => value !== "");
+
+      let paged;
+      if (hasFilters) {
+        const filterDto = {
+          title: appliedFilters.title || null,
+          publishedDateFrom: appliedFilters.publishedDateFrom ? `${appliedFilters.publishedDateFrom}T00:00:00Z` : null,
+          publishedDateTo: appliedFilters.publishedDateTo ? `${appliedFilters.publishedDateTo}T23:59:59Z` : null,
+          authorId: appliedFilters.authorId ? parseInt(appliedFilters.authorId) : null,
+          authorName: appliedFilters.authorName || null,
+          authorBirthDateFrom: appliedFilters.authorBirthDateFrom ? `${appliedFilters.authorBirthDateFrom}T00:00:00Z` : null,
+          authorBirthDateTo: appliedFilters.authorBirthDateTo ? `${appliedFilters.authorBirthDateTo}T23:59:59Z` : null
+        };
+        paged = await getFilteredAndSortedBooks(filterDto, selectedSortType, page, pageSize);
+      } else {
+        paged = await getAllBooks(selectedSortType, page, pageSize);
+      }
+
+      setBooks(Array.isArray(paged?.data) ? paged.data : []);
+      setCurrentPage(paged?.currentPage || page);
+      setTotalPages(paged?.totalPages || 0);
+      setTotalCount(paged?.totalCount || 0);
+    } catch (e) {
+      console.error("Books fetch error:", e);
+      setError("Failed to fetch books.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedSortType, appliedFilters]);
+
+  useEffect(() => {
+    fetchBooks(1);
   }, [selectedSortType, appliedFilters]);
 
   const handleSortChange = (e) => {
@@ -129,7 +139,6 @@ const Books = () => {
       authorBirthDateFrom: "",
       authorBirthDateTo: ""
     };
-    
     setFilters(emptyFilters);
     setAppliedFilters(emptyFilters);
   };
@@ -138,11 +147,21 @@ const Books = () => {
     if (!window.confirm("Delete this book?")) return;
     try {
       await deleteBook(id);
-      setBooks(prev => prev.filter(b => b.id !== id));
+      fetchBooks(currentPage);
     } catch (e) {
       console.error("Delete error:", e);
       alert("Failed to delete book.");
     }
+  };
+
+  const handleReviewCreated = () => {
+    fetchBooks(currentPage);
+  };
+
+  const goToPage = (p) => {
+    if (p < 1 || (totalPages && p > totalPages)) return;
+    setCurrentPage(p);
+    fetchBooks(p);
   };
 
   if (loading) {
@@ -181,10 +200,43 @@ const Books = () => {
         />
       )}
 
+      <div className="results-header">
+        <span>
+          Found {totalCount} book(s) — Page {currentPage} of {totalPages || 1}
+        </span>
+      </div>
+
       <BooksList
         books={books}
+        currentPage={currentPage}
+        pageSize={pageSize}
         onDelete={handleDelete}
+        onReviewCreated={handleReviewCreated}
       />
+
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button
+            className="pagination-btn"
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            ← Previous
+          </button>
+
+          <span className="pagination-info">
+            Page {currentPage} of {totalPages} · {totalCount} total
+          </span>
+
+          <button
+            className="pagination-btn"
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next →
+          </button>
+        </div>
+      )}
     </div>
   );
 };

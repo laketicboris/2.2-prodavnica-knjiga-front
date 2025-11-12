@@ -7,35 +7,28 @@ const SearchIssues = () => {
   const { volumeId } = useParams();
   const navigate = useNavigate();
   const { user } = useContext(UserContext);
-  
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
   const [showForm, setShowForm] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState(null);
   const [formData, setFormData] = useState({
     price: "",
     availableCopies: "1",
-    additionalNotes: ""
+    additionalNotes: "",
   });
   const [formLoading, setFormLoading] = useState(false);
-
   const cleanHtmlText = (htmlString) => {
     if (!htmlString) return "";
-    
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = htmlString;
-    
     const cleanText = tempDiv.textContent || tempDiv.innerText || "";
-    
-
-    if (cleanText.length > 250) {
-      return cleanText.substring(0, 250) + "...";
-    }
-    
-    return cleanText;
+    return cleanText.length > 250 ? cleanText.substring(0, 250) + "..." : cleanText;
   };
 
   useEffect(() => {
@@ -43,19 +36,19 @@ const SearchIssues = () => {
       navigate("/books");
       return;
     }
-    
-    if (volumeId) {
-      fetchIssues();
-    }
+    if (volumeId) fetchIssues(1);
   }, [user, navigate, volumeId]);
 
-  const fetchIssues = async () => {
+  const fetchIssues = async (page = 1) => {
     setLoading(true);
     setError("");
-    
     try {
-      const data = await searchIssuesByVolume(volumeId);
-      setIssues(Array.isArray(data) ? data : []);
+      const data = await searchIssuesByVolume(volumeId, page, pageSize);
+      setIssues(Array.isArray(data.data) ? data.data : []);
+      setCurrentPage(data.currentPage || 1);
+      setTotalPages(data.totalPages || 0);
+      setTotalCount(data.totalCount || 0);
+      setPageSize(data.pageSize || 10);
     } catch (err) {
       console.error("Issues search error:", err);
       setError("Failed to fetch issues for this volume.");
@@ -64,31 +57,33 @@ const SearchIssues = () => {
     }
   };
 
+  const handlePreviousPage = () => {
+    if (currentPage > 1) fetchIssues(currentPage - 1);
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) fetchIssues(currentPage + 1);
+  };
+
   const handleCreateIssue = (issue) => {
     setSelectedIssue(issue);
     setShowForm(true);
-    setFormData({
-      price: "",
-      availableCopies: "1", 
-      additionalNotes: ""
-    });
+    setFormData({ price: "", availableCopies: "1", additionalNotes: "" });
     setError("");
     setMessage("");
   };
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    
     if (!formData.price || parseFloat(formData.price) <= 0) {
       setError("Please enter a valid price.");
       return;
     }
-    
     if (!formData.availableCopies || parseInt(formData.availableCopies) < 0) {
       setError("Please enter valid available copies.");
       return;
@@ -103,15 +98,13 @@ const SearchIssues = () => {
         externalApiId: selectedIssue.id,
         price: parseFloat(formData.price),
         availableCopies: parseInt(formData.availableCopies),
-        additionalNotes: formData.additionalNotes || null
+        additionalNotes: formData.additionalNotes || null,
       };
-
       await createIssue(issueData);
       setMessage("Issue saved successfully!");
       setShowForm(false);
       setSelectedIssue(null);
-      
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       console.error("Create issue error:", err);
       setError("Failed to save issue. Please try again.");
@@ -139,10 +132,7 @@ const SearchIssues = () => {
     <div className="table-container">
       <div className="page-header">
         <h2 className="page-title">📖 Volume Issues</h2>
-        <button 
-          className="btn-secondary"
-          onClick={() => navigate('/volumes/search')}
-        >
+        <button className="btn-secondary" onClick={() => navigate("/volumes/search")}>
           ← Back to Volumes
         </button>
       </div>
@@ -155,13 +145,16 @@ const SearchIssues = () => {
       ) : (
         <>
           <div className="results-header">
-            <span>Found {issues.length} issue(s)</span>
+            <span>
+              Found {totalCount} issue(s) — Page {currentPage} of {totalPages}
+            </span>
           </div>
-          
+
           <table className="data-table">
             <thead>
               <tr>
                 <th className="number-column">#</th>
+                <th className="image-column">Cover</th>
                 <th className="title-column">Issue Name</th>
                 <th className="number-column">Issue #</th>
                 <th className="date-column">Release Date</th>
@@ -171,11 +164,25 @@ const SearchIssues = () => {
             <tbody>
               {issues.map((issue, index) => (
                 <tr key={issue.id}>
-                  <td className="number-column">{index + 1}</td>
+                  <td className="number-column">
+                    {(currentPage - 1) * pageSize + index + 1}
+                  </td>
+                  <td className="image-column">
+                    {issue.image?.medium_url ? (
+                      <img
+                        src={issue.image.medium_url}
+                        alt={issue.name || "Issue cover"}
+                        className="issue-cover-thumbnail"
+                        onError={(e) => (e.target.style.display = "none")}
+                      />
+                    ) : (
+                      <span className="no-image">No Image</span>
+                    )}
+                  </td>
                   <td className="title-column">{issue.name || "Untitled Issue"}</td>
                   <td className="number-column">{issue.issue_number || "N/A"}</td>
                   <td className="date-column">
-                    {issue.cover_date 
+                    {issue.cover_date
                       ? new Date(issue.cover_date).toLocaleDateString("sr-RS")
                       : "N/A"}
                   </td>
@@ -191,6 +198,28 @@ const SearchIssues = () => {
               ))}
             </tbody>
           </table>
+
+          {totalPages > 1 && (
+            <div className="pagination">
+              <button
+                className="pagination-btn"
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+              >
+                ← Previous
+              </button>
+              <span className="pagination-info">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                className="pagination-btn"
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+              >
+                Next →
+              </button>
+            </div>
+          )}
         </>
       )}
 
@@ -198,18 +227,26 @@ const SearchIssues = () => {
         <div className="form-overlay">
           <div className="form-container">
             <h3 className="form-title">💾 Save Issue to Library</h3>
-            
             {error && <div className="message error">{error}</div>}
-            
+
             <div className="issue-preview">
               <h4>Issue Details:</h4>
+              {selectedIssue.image?.medium_url && (
+                <div className="preview-image">
+                  <img
+                    src={selectedIssue.image.medium_url}
+                    alt={selectedIssue.name || "Issue cover"}
+                    className="issue-cover-preview"
+                  />
+                </div>
+              )}
               <p><strong>Name:</strong> {selectedIssue.name || "Untitled Issue"}</p>
               <p><strong>Issue Number:</strong> {selectedIssue.issue_number || "N/A"}</p>
-              <p><strong>Release Date:</strong> {
-                selectedIssue.cover_date 
+              <p><strong>Release Date:</strong> 
+                {selectedIssue.cover_date
                   ? new Date(selectedIssue.cover_date).toLocaleDateString("sr-RS")
-                  : "N/A"
-              }</p>
+                  : "N/A"}
+              </p>
               {selectedIssue.description && (
                 <p><strong>Description:</strong> {cleanHtmlText(selectedIssue.description)}</p>
               )}
